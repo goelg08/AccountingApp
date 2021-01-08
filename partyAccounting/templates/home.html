@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+  {% block content %}
+    {% if userflag==1: %}
+      {% for party in userparty.items %}
+          <article class="media content-section">
+            <!--<img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + party.creator.image_file) }}">-->
+            <div class="media-body">
+              <div class="article-metadata">
+                <small class="credit" >Credit : {{ all_cred_debt_dic[party.id]['tcredit'] }}</small>&nbsp;
+                <small class="debit" >Debit : {{ 0-all_cred_debt_dic[party.id]['tdebit'] }}</small>&nbsp;
+                {% if all_cred_debt_dic[party.id]['tbalance'] > 0 %}
+                  <small class="credit">Balance : {{ all_cred_debt_dic[party.id]['tbalance'] }}</small>
+                {% else %}
+                  <small class="debit">Balance : {{ all_cred_debt_dic[party.id]['tbalance'] }}</small>
+                {% endif %}
+                <div>
+                  <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('userparties.update_userparty', userparty_id=party.id) }}">Update</a>
+                  <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                  <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('usertransactions.new_userpartytransaction', userparty_id=party.id) }}">Add Transaction</a>
+                  <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('transactionreports.report_userpartytransactionreport', userparty_id=party.id) }}">Generate Report</a>
+                </div>
+              </div>
+              <h2><a class="article-title" href="{{ url_for('userparties.userparty', userparty_id=party.id) }}">{{ party.partyname }}</a></h2>
+              <h2><a class="article-title" href="#">{{ party.partymobile }}</a></h2>
+              <p class="article-content">{{ party.partyaddress }}</p>
+              <p class="article-content">{{ party.partydesc }}</p>
+            </div>
+          </article>
+      {% endfor %}
+      {% for page_num in userparty.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if page_num %}
+          {% if userparty.page == page_num %}
+            <a class="btn btn-info mb-4" href="{{ url_for('main.home', page=page_num) }}">{{ page_num }}</a>
+          {% else %}
+            <a class="btn btn-outline-info mb-4" href="{{ url_for('main.home', page=page_num) }}">{{ page_num }}</a>
+          {% endif %}
+        {% else %}
+          ...
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <section class="hero">
+      </section>
+    {% endif %} 
+  {% endblock content %}
+  {% block sidebarcontent %}
+    {% if userflag==1: %}
+      <h3>Party Stats</h3>
+        <p class='text-muted'>
+          <ul class="list-group">
+            <li class="list-group-item list-group-item-light" style="color: green; font-weight: bold;"> Credit : {{ all_cred_debt_dic_all[user.id]['tcredit'] }}</li>
+            <li class="list-group-item list-group-item-light" style="color: red; font-weight: bold;">Debit : {{ 0-all_cred_debt_dic_all[user.id]['tdebit'] }}</li>
+            {% if all_cred_debt_dic_all[user.id]['tbalance'] > 0: %}
+              <li class="list-group-item list-group-item-light" style="color: green; font-weight: bold;">Balance : {{ all_cred_debt_dic_all[user.id]['tbalance'] }}</li>
+            {% else %}
+              <li class="list-group-item list-group-item-light" style="color: red; font-weight: bold;">Balance : {{ all_cred_debt_dic_all[user.id]['tbalance'] }}</li>
+            {% endif %}
+            <li class="list-group-item list-group-item-light" style="color: black; font-weight: bold;">Total Party : {{ no_of_party }}</li>
+          </ul>
+        </p>
+        <br>
+      <h3>Search Party</h3>
+        <form class="form-inline my-2 my-leg-0" method="GET">
+          <input class="form-control mr-sm-2" type="search" placeholder="Search" name="query">
+          <button class="btn btn-online-success my-2 my-sm-0" type="submit">Search</button>
+        </form>  
+    {% endif %}
+  {% endblock sidebarcontent %}
+
